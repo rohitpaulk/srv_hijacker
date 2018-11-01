@@ -13,7 +13,10 @@ def test_infect(consul_test_service_url):
     with pytest.raises(requests.exceptions.ConnectionError):
         requests.get(consul_test_service_url)
 
-    srv_hijacker.infect(dns_host="127.0.0.1", dns_port="8600")
+    srv_hijacker.infect(
+        host_regex=r'service.consul$',
+        srv_dns_host="127.0.0.1",
+        srv_dns_port="8600")
 
     # Now that the monkey patching is done, this should succeed
     response = requests.get(consul_test_service_url)
