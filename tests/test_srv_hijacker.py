@@ -26,6 +26,17 @@ def test_hijack(consul_test_service_url):
     response = requests.get("https://httpbin.org/get")
     assert response.status_code == 200
 
+    # Patching again shouldn't cause issues
+    srv_hijacker.hijack(
+        host_regex=r'service.consul$',
+        srv_dns_host="127.0.0.1",
+        srv_dns_port="8600")
+
+    response = requests.get(consul_test_service_url)
+    assert response.status_code == 200
+    response = requests.get("https://httpbin.org/get")
+    assert response.status_code == 200
+
 
 @pytest.fixture
 def consul_test_service_url():

@@ -40,8 +40,18 @@ def patched_new_conn(url_regex, srv_resolver):
 
 
 def hijack(host_regex, srv_dns_host, srv_dns_port):
-    srv_resolver = resolver.Resolver()
+    """
+    Usage:
 
+    ```
+    srv_hijacker.hijack(
+        host_regex=r'service.consul$',
+        srv_dns_host='127.0.0.1',
+        srv_dns_port=8600
+    )
+    ```
+    """
+    srv_resolver = resolver.Resolver()
     srv_resolver.port = int(srv_dns_port)
     srv_resolver.nameservers = [srv_dns_host]
 
