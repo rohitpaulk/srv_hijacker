@@ -4,10 +4,9 @@ from socket import error as SocketError, timeout as SocketTimeout
 
 # 3rd Party Imports
 from dns import resolver
-from requests.packages.urllib3.connection import HTTPConnection
-from requests.packages.urllib3.exceptions import (NewConnectionError,
-                                                  ConnectTimeoutError)
-from requests.packages.urllib3.util import connection
+from urllib3.connection import HTTPConnection
+from urllib3.exceptions import (NewConnectionError, ConnectTimeoutError)
+from urllib3.util import connection
 
 
 def resolve_srv_record(host):
