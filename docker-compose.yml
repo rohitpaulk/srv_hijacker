@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  consul:
+    restart: always
+    image: consul
+    ports:
+    - "8500:8500" # Web UI
+    - "8600:8600/tcp" # DNS
+    - "8600:8600/udp" # DNS
