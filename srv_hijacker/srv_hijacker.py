@@ -73,6 +73,6 @@ def patched_new_conn(url_regex, srv_dns_host, srv_dns_port):
     return f
 
 
-def infect(host_regex, srv_dns_host, srv_dns_port):
+def hijack(host_regex, srv_dns_host, srv_dns_port):
     HTTPConnection._new_conn = patched_new_conn(host_regex, srv_dns_host,
                                                 srv_dns_port)

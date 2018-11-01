@@ -1,1 +1,1 @@
-from .srv_hijacker import infect
+from .srv_hijacker import hijack

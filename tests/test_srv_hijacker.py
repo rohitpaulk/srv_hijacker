@@ -8,12 +8,12 @@ CONSUL_API_PORT = "8500"
 CONSUL_API_URL = f"{CONSUL_HOST}:{CONSUL_API_PORT}"
 
 
-def test_infect(consul_test_service_url):
-    # Before the 'infector' is run, this request must fail
+def test_hijack(consul_test_service_url):
+    # Before 'hijack' is run, this request must fail
     with pytest.raises(requests.exceptions.ConnectionError):
         requests.get(consul_test_service_url)
 
-    srv_hijacker.infect(
+    srv_hijacker.hijack(
         host_regex=r'service.consul$',
         srv_dns_host="127.0.0.1",
         srv_dns_port="8600")
