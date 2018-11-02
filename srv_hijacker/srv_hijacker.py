@@ -10,10 +10,21 @@ from urllib3.util import connection
 from dns import resolver
 
 
+def resolve_ip_for_target(rrsets, target):
+    for rrset in rrsets:
+        if rrset.name == target:
+            return rrset.items[0].address
+
+    raise NewConnectionError("Couldn't find A record for target %s" % target)
+
+
 def resolve_srv_record(host, resolver):
     ans = resolver.query(host, 'SRV')
 
-    return ans.response.additional[0].items[0].address, ans[0].port
+    port = ans[0].port
+    host = resolve_ip_for_target(ans.response.additional, ans[0].target)
+
+    return host, port
 
 
 original_new_conn = HTTPConnection._new_conn
@@ -39,7 +50,7 @@ def patched_new_conn(url_regex, srv_resolver):
     return patched_f
 
 
-def hijack(host_regex, srv_dns_host, srv_dns_port):
+def hijack(host_regex, srv_dns_host=None, srv_dns_port=None):
     """
     Usage:
 
@@ -52,7 +63,9 @@ def hijack(host_regex, srv_dns_host, srv_dns_port):
     ```
     """
     srv_resolver = resolver.Resolver()
-    srv_resolver.port = int(srv_dns_port)
-    srv_resolver.nameservers = [srv_dns_host]
+    if srv_dns_host:
+        srv_resolver.nameservers = [srv_dns_host]
+    if srv_dns_port:
+        srv_resolver.port = int(srv_dns_port)
 
     HTTPConnection._new_conn = patched_new_conn(host_regex, srv_resolver)

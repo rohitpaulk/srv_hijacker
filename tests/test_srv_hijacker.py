@@ -1,6 +1,7 @@
 import srv_hijacker
 import requests
 import pytest
+from uuid import uuid4
 
 CONSUL_HOST = "127.0.0.1"
 CONSUL_DNS_PORT = "8600"

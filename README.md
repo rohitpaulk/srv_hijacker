@@ -27,6 +27,9 @@ srv_hijacker.hijack(
 Note: Only connections that match the `host_regex` are patched. All other
 connections are the same as before.
 
+`srv_dns_host` and `srv_dns_port` are optional, if not provided the default
+nameservers and ports configured.
+
 ### Compatibility
 
 Only confirmed to work with Python 3.7. Tests use `requests`, which uses
