@@ -3,6 +3,13 @@
 A python module that patches [`urllib3`](https://urllib3.readthedocs.io/en/latest/)
 to query a certain DNS server for SRV records when creating connections.
 
+### Installation
+
+
+```
+pip install srv-hijacker
+```
+
 ### Usage
 
 This module exposes exactly one function:
