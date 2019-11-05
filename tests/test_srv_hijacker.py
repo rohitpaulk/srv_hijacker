@@ -15,9 +15,8 @@ def test_hijack(consul_test_service_url):
         requests.get(consul_test_service_url)
 
     srv_hijacker.hijack(
-        host_regex=r'service.consul$',
-        srv_dns_host="127.0.0.1",
-        srv_dns_port="8600")
+        host_regex=r"service.consul$", srv_dns_host="127.0.0.1", srv_dns_port="8600"
+    )
 
     # Now that the monkey patching is done, this should succeed
     response = requests.get(consul_test_service_url)
@@ -29,9 +28,8 @@ def test_hijack(consul_test_service_url):
 
     # Patching again shouldn't cause issues
     srv_hijacker.hijack(
-        host_regex=r'service.consul$',
-        srv_dns_host="127.0.0.1",
-        srv_dns_port="8600")
+        host_regex=r"service.consul$", srv_dns_host="127.0.0.1", srv_dns_port="8600"
+    )
 
     response = requests.get(consul_test_service_url)
     assert response.status_code == 200
@@ -52,10 +50,7 @@ def register_service_on_consul(service_name, service_host, service_port):
     url = f"http://{CONSUL_API_URL}/v1/agent/service/register"
     response = requests.put(
         url,
-        json={
-            "Name": service_name,
-            "Address": service_host,
-            "Port": int(service_port)
-        })
+        json={"Name": service_name, "Address": service_host, "Port": int(service_port)},
+    )
 
     assert response.status_code == 200

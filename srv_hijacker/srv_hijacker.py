@@ -4,7 +4,7 @@ import re
 from socket import error as SocketError, timeout as SocketTimeout
 
 from urllib3.connection import HTTPConnection
-from urllib3.exceptions import (NewConnectionError, ConnectTimeoutError)
+from urllib3.exceptions import NewConnectionError, ConnectTimeoutError
 from urllib3.util import connection
 
 from dns import resolver
@@ -23,13 +23,14 @@ def resolve_ip_for_target(rrsets, target):
 
 
 def resolve_srv_record(old_host, resolver):
-    ans = resolver.query(old_host, 'SRV')
+    ans = resolver.query(old_host, "SRV")
 
     new_port = ans[0].port
     new_host = resolve_ip_for_target(ans.response.additional, ans[0].target)
 
-    logger.debug("Resolved SRV record for host %s: (%s:%s)", old_host,
-                 new_host, new_port)
+    logger.debug(
+        "Resolved SRV record for host %s: (%s:%s)", old_host, new_host, new_port
+    )
 
     return new_host, new_port
 
@@ -53,8 +54,7 @@ def patched_new_conn(url_regex, srv_resolver):
             logger.debug("Host %s matched SRV regex, resolving", self.host)
             self.host, self.port = resolve_srv_record(self.host, srv_resolver)
         else:
-            logger.debug("Host %s did not match SRV regex, ignoring",
-                         self.host)
+            logger.debug("Host %s did not match SRV regex, ignoring", self.host)
 
         return original_new_conn(self)
 
