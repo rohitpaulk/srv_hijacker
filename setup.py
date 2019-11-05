@@ -3,7 +3,7 @@ from setuptools import find_packages
 
 setup(
     name="srv_hijacker",
-    version="0.0.5",
+    version="0.0.6",
     description="Patch urllib3 to query a certain DNS server for SRV records",
     url="https://github.com/rohitpaulk/srv_hijacker",
     author="Paul Kuruvilla",
