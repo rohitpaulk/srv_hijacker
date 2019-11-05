@@ -1,7 +1,6 @@
 import srv_hijacker
 import requests
 import pytest
-from uuid import uuid4
 
 CONSUL_HOST = "127.0.0.1"
 CONSUL_DNS_PORT = "8600"
@@ -15,7 +14,9 @@ def test_hijack(consul_test_service_url):
         requests.get(consul_test_service_url)
 
     srv_hijacker.hijack(
-        host_regex=r"service.consul$", srv_dns_host="127.0.0.1", srv_dns_port="8600"
+        host_regex=r"service.consul$",
+        srv_dns_host=CONSUL_HOST,
+        srv_dns_port=CONSUL_DNS_PORT,
     )
 
     # Now that the monkey patching is done, this should succeed
@@ -28,7 +29,9 @@ def test_hijack(consul_test_service_url):
 
     # Patching again shouldn't cause issues
     srv_hijacker.hijack(
-        host_regex=r"service.consul$", srv_dns_host="127.0.0.1", srv_dns_port="8600"
+        host_regex=r"service.consul$",
+        srv_dns_host=CONSUL_HOST,
+        srv_dns_port=CONSUL_DNS_PORT,
     )
 
     response = requests.get(consul_test_service_url)
