@@ -10,7 +10,7 @@ test:
 	pytest tests
 
 build:
-	rm dist/*
+	rm -f dist/*
 	python setup.py sdist bdist_wheel
 
 upload: build
