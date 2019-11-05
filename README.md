@@ -1,7 +1,8 @@
 # srv_hijacker
 
-A python module that patches [`urllib3`](https://urllib3.readthedocs.io/en/latest/)
-to query a certain DNS server for SRV records when creating connections.
+A python module that patches
+[`socket`](https://docs.python.org/3/library/socket.html) to query a certain DNS
+server for SRV records when creating connections.
 
 ### Installation
 
@@ -37,11 +38,10 @@ nameservers and ports configured.
 ### Compatibility
 
 Only confirmed to work with Python 3.7. Tests use `requests`, which uses
-`urllib3` internally.
+`socket` internally.
 
 ### Background
 
 The use case this was designed for is to transparently patch `requests` so that
 calls to endpoints like `your_service.service.consul` hit consul's DNS server
 and use the host + port given in the SRV query.
-
