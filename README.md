@@ -5,7 +5,6 @@ to query a certain DNS server for SRV records when creating connections.
 
 ### Installation
 
-
 ```
 pip install srv-hijacker
 ```
@@ -29,6 +28,11 @@ connections are the same as before.
 
 `srv_dns_host` and `srv_dns_port` are optional, if not provided the default
 nameservers and ports configured.
+
+### Running Tests
+
+- Run `make run_consul` to boot up a DNS server to test against
+- Run `make test`
 
 ### Compatibility
 
