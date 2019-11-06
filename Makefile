@@ -1,7 +1,7 @@
 .PHONY: dig_consul test build upload bump_version commit_version_update bump_commit_upload
 
 dig_consul:
-	dig @127.0.0.1 -p 8600 test.service.consul SRV
+	dig @127.0.0.1 -p 8600 test-http.service.consul SRV
 
 run_consul:
 	consul agent -dev
