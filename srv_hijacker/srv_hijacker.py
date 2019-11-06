@@ -3,6 +3,7 @@ import re
 import socket
 from socket import gaierror as SocketError
 
+import dns
 from dns import resolver
 
 import logging
@@ -10,19 +11,21 @@ import logging
 logger = logging.getLogger("srv_hijacker")
 
 
-def resolve_ip_for_target(rrsets, target):
+def resolve_ip(rrsets, old_host):
     for rrset in rrsets:
-        if rrset.name == target:
+        if rrset.rdtype == dns.rdatatype.A:
+            # TODO: Is it safe to assume that **any** A record in the
+            # response is valid? Should we be matching against name?
             return rrset.items[0].address
 
-    raise SocketError("Couldn't find SRV record for target %s" % target)
+    raise SocketError(f"Couldn't find A record for {old_host}")
 
 
-def resolve_srv_record(old_host, resolver):
-    ans = resolver.query(old_host, "SRV")
+def resolve_srv_record(old_host, srv_resolver):
+    ans = srv_resolver.query(old_host, "SRV")
 
     new_port = ans[0].port
-    new_host = resolve_ip_for_target(ans.response.additional, ans[0].target)
+    new_host = resolve_ip(ans.response.additional, old_host)
 
     logger.debug(
         "Resolved SRV record for host %s: (%s:%s)", old_host, new_host, new_port
