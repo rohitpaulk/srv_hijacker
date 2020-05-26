@@ -11,8 +11,8 @@ CONSUL_API_URL = f"{CONSUL_HOST}:{CONSUL_API_PORT}"
 def register_service_on_consul(service_name, service_host, service_port):
     url = f"http://{CONSUL_API_URL}/v1/agent/service/register"
     response = requests.put(
-            url,
-            json={"Name": service_name, "Address": service_host, "Port": int(service_port)},
+        url,
+        json={"Name": service_name, "Address": service_host, "Port": int(service_port)},
     )
 
     assert response.status_code == 200
@@ -49,11 +49,11 @@ class StatefulTest(object):
 
     @classmethod
     def setup_class(cls):
-        sock_getaddrinfo_fn = cls.get_mod_attr('socket', 'getaddrinfo')
-        psycopg2_connect_fn = cls.get_mod_attr('psycopg2', 'connect')
+        sock_getaddrinfo_fn = cls.get_mod_attr("socket", "getaddrinfo")
+        psycopg2_connect_fn = cls.get_mod_attr("psycopg2", "connect")
 
-        cls.restore_on_cleanup('socket', 'getaddrinfo', sock_getaddrinfo_fn)
-        cls.restore_on_cleanup('psycopg2', 'connect', psycopg2_connect_fn)
+        cls.restore_on_cleanup("socket", "getaddrinfo", sock_getaddrinfo_fn)
+        cls.restore_on_cleanup("psycopg2", "connect", psycopg2_connect_fn)
 
     @classmethod
     def teardown_class(cls):

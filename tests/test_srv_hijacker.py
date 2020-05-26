@@ -1,7 +1,12 @@
 import pytest
 import requests
 from .common import StatefulTest
-from .common import CONSUL_HOST, CONSUL_DNS_PORT, CONSUL_API_PORT, register_service_on_consul
+from .common import (
+    CONSUL_HOST,
+    CONSUL_DNS_PORT,
+    CONSUL_API_PORT,
+    register_service_on_consul,
+)
 
 import srv_hijacker
 
@@ -26,9 +31,9 @@ class TestPatchSocketGetaddrinfo(StatefulTest):
             test_http_hijacked()
 
         srv_hijacker.hijack(
-                host_regex=r"service.consul$",
-                srv_dns_host=CONSUL_HOST,
-                srv_dns_port=CONSUL_DNS_PORT,
+            host_regex=r"service.consul$",
+            srv_dns_host=CONSUL_HOST,
+            srv_dns_port=CONSUL_DNS_PORT,
         )
 
         # Now that the monkey patching is done, both should succeed
@@ -37,9 +42,9 @@ class TestPatchSocketGetaddrinfo(StatefulTest):
 
         # Patching again shouldn't cause issues
         srv_hijacker.hijack(
-                host_regex=r"service.consul$",
-                srv_dns_host=CONSUL_HOST,
-                srv_dns_port=CONSUL_DNS_PORT,
+            host_regex=r"service.consul$",
+            srv_dns_host=CONSUL_HOST,
+            srv_dns_port=CONSUL_DNS_PORT,
         )
 
         test_http_direct()

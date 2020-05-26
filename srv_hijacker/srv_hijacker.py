@@ -29,7 +29,7 @@ def resolve_srv_record(old_host, srv_resolver):
     new_host = resolve_ip(ans.response.additional, old_host)
 
     logger.debug(
-            "Resolved SRV record for host %s: (%s:%s)", old_host, new_host, new_port
+        "Resolved SRV record for host %s: (%s:%s)", old_host, new_host, new_port
     )
 
     return new_host, new_port
@@ -83,8 +83,10 @@ def _patch_psycopg2(host_regex, srv_resolver):
                 # Host may be left out to use localhost or
                 # possibly set using environment variables, nothing
                 # we can do in either case.
-                logger.error("'host' parameter is not present in call to psycopg2.connect, "
-                             "DNS resolution might not work properly")
+                logger.error(
+                    "'host' parameter is not present in call to psycopg2.connect, "
+                    "DNS resolution might not work properly"
+                )
 
                 return fn(dsn, connection_factory, *args, **kwargs)
 
@@ -108,7 +110,14 @@ SUPPORTED_LIBS = {
 }
 
 
-def hijack(host_regex, srv_dns_host=None, srv_dns_port=None, patch_everything=True, raise_error=False, **libs):
+def hijack(
+    host_regex,
+    srv_dns_host=None,
+    srv_dns_port=None,
+    patch_everything=True,
+    raise_error=False,
+    **libs,
+):
     """
     Usage:
 
@@ -144,4 +153,6 @@ def hijack(host_regex, srv_dns_host=None, srv_dns_port=None, patch_everything=Tr
             if raise_error:
                 raise
             else:
-                logger.error(f"failed to patch {k}. DNS resolution might not work properly. {e}")
+                logger.error(
+                    f"failed to patch {k}. DNS resolution might not work properly. {e}"
+                )
