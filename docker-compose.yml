@@ -8,3 +8,12 @@ services:
     - "8500:8500" # Web UI
     - "8600:8600/tcp" # DNS
     - "8600:8600/udp" # DNS
+
+  postgres:
+    restart: always
+    image: postgres:9.6
+    environment:
+      POSTGRES_USER: srvhijacker
+      POSTGRES_PASSWORD: secret
+    ports:
+    - "5432:5432"
