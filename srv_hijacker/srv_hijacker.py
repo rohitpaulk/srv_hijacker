@@ -60,7 +60,7 @@ def patched_socket_getaddrinfo(host_regex, srv_resolver):
     return patched_f
 
 
-class PatchError(BaseException):
+class PatchError(Exception):
     pass
 
 
@@ -105,19 +105,12 @@ def _patch_psycopg2(host_regex, srv_resolver):
     psycopg2._connect = patch_psycopg2_connect(psycopg2._connect)
 
 
-SUPPORTED_LIBS = {
+PATCHABLE_LIBS = {
     "psycopg2": _patch_psycopg2,
 }
 
 
-def hijack(
-    host_regex,
-    srv_dns_host=None,
-    srv_dns_port=None,
-    patch_everything=True,
-    raise_error=False,
-    **libs,
-):
+def hijack(host_regex, srv_dns_host=None, srv_dns_port=None, libraries_to_patch=None):
     """
     Usage:
 
@@ -125,7 +118,8 @@ def hijack(
     srv_hijacker.hijack(
         host_regex=r'service.consul$',
         srv_dns_host='127.0.0.1',
-        srv_dns_port=8600
+        srv_dns_port=8600,
+        libraries_to_patch=['psycopg2']
     )
     ```
     """
@@ -137,22 +131,11 @@ def hijack(
 
     socket.getaddrinfo = patched_socket_getaddrinfo(host_regex, srv_resolver)
 
-    if patch_everything:
-        libs = {each: True for each in SUPPORTED_LIBS.keys()}
+    if not libraries_to_patch:
+        return
 
-    for k, v in libs.items():
-        if k not in SUPPORTED_LIBS:
-            raise ValueError(f"library {k} is not supported")
+    for each in libraries_to_patch:
+        if each not in PATCHABLE_LIBS:
+            raise PatchError(f"library {each} is not supported")
 
-        if not v:
-            continue
-
-        try:
-            SUPPORTED_LIBS.get(k)(host_regex, srv_resolver)
-        except BaseException as e:
-            if raise_error:
-                raise
-            else:
-                logger.error(
-                    f"failed to patch {k}. DNS resolution might not work properly. {e}"
-                )
+        PATCHABLE_LIBS.get(each)(host_regex, srv_resolver)

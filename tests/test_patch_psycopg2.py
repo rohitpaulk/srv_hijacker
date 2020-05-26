@@ -27,6 +27,7 @@ class TestPatchPsycopg2(StatefulTest):
             host_regex=r"service.consul$",
             srv_dns_host=CONSUL_HOST,
             srv_dns_port=CONSUL_DNS_PORT,
+            libraries_to_patch=["psycopg2"],
         )
 
         with psycopg2.connect(dsn) as conn:
