@@ -20,7 +20,8 @@ import srv_hijacker
 srv_hijacker.hijack(
     host_regex=r'service.consul$',
     srv_dns_host='127.0.0.1',
-    srv_dns_port=8600
+    srv_dns_port=8600,
+    libraries_to_patch=['psycopg2']
 )
 ```
 
@@ -29,6 +30,12 @@ connections are the same as before.
 
 `srv_dns_host` and `srv_dns_port` are optional, if not provided the default
 nameservers and ports configured.
+
+Additionally, A list of supported third party libraries can be given with `libraries_to_patch`
+argument. The libraries are patched according to their specific DNS resolution method,
+or `PatchError` is raised if the library is not supported.
+
+See `srv_hijacker.PATCHABLE_LIBS` for a list of all supported libraries.
 
 ### Running Tests
 
