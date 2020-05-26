@@ -2,6 +2,7 @@ import re
 
 import socket
 from socket import gaierror as SocketError
+from functools import wraps
 
 import dns
 from dns import resolver
@@ -59,7 +60,57 @@ def patched_socket_getaddrinfo(host_regex, srv_resolver):
     return patched_f
 
 
-def hijack(host_regex, srv_dns_host=None, srv_dns_port=None):
+class PatchError(Exception):
+    pass
+
+
+def _patch_psycopg2(host_regex, srv_resolver):
+    try:
+        import psycopg2
+        from psycopg2.extensions import parse_dsn, make_dsn
+    except ImportError as e:
+        raise PatchError(f"failed to import psycopg2. {e}")
+
+    def patch_psycopg2_connect(fn):
+        @wraps(fn)
+        def wrapper(dsn, connection_factory=None, *args, **kwargs):
+            config = parse_dsn(dsn)
+            host = config.get("host")
+            if host is None:
+                host = kwargs.get("host")
+
+            if host is None:
+                # Host may be left out to use localhost or
+                # possibly set using environment variables, nothing
+                # we can do in either case.
+                logger.error(
+                    "'host' parameter is not present in call to psycopg2.connect, "
+                    "DNS resolution might not work properly"
+                )
+
+                return fn(dsn, connection_factory, *args, **kwargs)
+
+            if re.search(host_regex, host):
+                logger.debug("Host %s matched SRV regex, resolving", host)
+                host, port = resolve_srv_record(host, srv_resolver)
+                config["host"] = host
+                config["port"] = port
+
+            dsn = make_dsn(**config)
+
+            return fn(dsn, connection_factory, *args, **kwargs)
+
+        return wrapper
+
+    psycopg2._connect = patch_psycopg2_connect(psycopg2._connect)
+
+
+PATCHABLE_LIBS = {
+    "psycopg2": _patch_psycopg2,
+}
+
+
+def hijack(host_regex, srv_dns_host=None, srv_dns_port=None, libraries_to_patch=None):
     """
     Usage:
 
@@ -67,7 +118,8 @@ def hijack(host_regex, srv_dns_host=None, srv_dns_port=None):
     srv_hijacker.hijack(
         host_regex=r'service.consul$',
         srv_dns_host='127.0.0.1',
-        srv_dns_port=8600
+        srv_dns_port=8600,
+        libraries_to_patch=['psycopg2']
     )
     ```
     """
@@ -78,3 +130,12 @@ def hijack(host_regex, srv_dns_host=None, srv_dns_port=None):
         srv_resolver.port = int(srv_dns_port)
 
     socket.getaddrinfo = patched_socket_getaddrinfo(host_regex, srv_resolver)
+
+    if not libraries_to_patch:
+        return
+
+    for each in libraries_to_patch:
+        if each not in PATCHABLE_LIBS:
+            raise PatchError(f"library {each} is not supported")
+
+        PATCHABLE_LIBS.get(each)(host_regex, srv_resolver)
