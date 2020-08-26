@@ -110,6 +110,15 @@ PATCHABLE_LIBS = {
 }
 
 
+def register(lib_name, patching_f):
+    global PATCHABLE_LIBS
+
+    if lib_name in PATCHABLE_LIBS:
+        logger.warn(f"Overridding existing patch for {lib_name}")
+
+    PATCHABLE_LIBS[lib_name] = patching_f
+
+
 def hijack(host_regex, srv_dns_host=None, srv_dns_port=None, libraries_to_patch=None):
     """
     Usage:

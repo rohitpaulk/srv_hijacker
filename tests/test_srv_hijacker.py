@@ -57,3 +57,11 @@ class TestPatchSocketGetaddrinfo(StatefulTest):
 
         # We can now use a consul endpoint itself for testing.
         return "http://test-http.service.consul/v1/agent/services"
+
+
+def test_registering_a_new_patch_works():
+    with pytest.raises(srv_hijacker.PatchError):
+        srv_hijacker.hijack(host_regex=r"service.consul$", libraries_to_patch=["lol"])
+
+    srv_hijacker.register("lol", lambda x: x)
+    srv_hijacker.hijack("")

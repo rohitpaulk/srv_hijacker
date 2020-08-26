@@ -1,1 +1,1 @@
-from .srv_hijacker import hijack
+from .srv_hijacker import hijack, register, PatchError
