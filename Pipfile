@@ -8,7 +8,7 @@ name = "pypi"
 [packages]
 requests = "*"
 pytest = "*"
-dnspython = "*"
+dnspython = "==2.0.0"
 bumpversion = "*"
 twine = "*"
 
